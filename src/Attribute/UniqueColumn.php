@@ -1,6 +1,6 @@
 <?php
 
-namespace DoctrineEnhanceBundle\Attribute;
+namespace Tourze\DoctrineIndexedBundle\Attribute;
 
 /**
  * 标记指定实体的成员关联一个唯一索引
