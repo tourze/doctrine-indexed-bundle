@@ -31,15 +31,15 @@ class AddIndexedListener
         $idxName = "{$tableName}_{$type}_{$columnName}";
         // 有一种情况，那就是表名太长时，字段不一定够用，此时我们需要缩短一些
         // @see https://blog.csdn.net/vkingnew/article/details/83898542
-        if (mb_strlen($idxName) > $idxMaxLength) {
+        if (strlen($idxName) > $idxMaxLength) {
             $idxName = md5($tableName) . "_{$type}_{$columnName}";
         }
         // 如果还是太长的话，那就只能降级了
-        if (mb_strlen($idxName) > $idxMaxLength) {
-            $idxName = mb_substr(md5($tableName), 0, 16) . "_{$type}_{$columnName}";
+        if (strlen($idxName) > $idxMaxLength) {
+            $idxName = substr(md5($tableName), 0, 16) . "_{$type}_{$columnName}";
         }
         // 终极方案了
-        if (mb_strlen($idxName) > $idxMaxLength) {
+        if (strlen($idxName) > $idxMaxLength) {
             $idxName = md5("{$tableName}_{$type}_{$columnName}");
         }
 
