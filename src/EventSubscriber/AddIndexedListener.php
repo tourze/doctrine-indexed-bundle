@@ -58,7 +58,7 @@ class AddIndexedListener
             $ormColumn = $ormColumn[0]->newInstance();
             /** @var ORM\Column $ormColumn */
             $name = $ormColumn->name;
-            if (!$name) {
+            if ($name === null) {
                 $name = $property->getName();
                 $name = $this->inflector->toSnakeCase($name);
             }
@@ -69,7 +69,7 @@ class AddIndexedListener
             // 索引字段
             $indexColumn = $property->getAttributes(IndexColumn::class);
             // 要注意，如果字段已经是唯一索引，那么就不需要再加索引
-            if ($indexColumn && !$ormColumn->unique) {
+            if (!empty($indexColumn) && !$ormColumn->unique) {
                 $indexColumn = $indexColumn[0]->newInstance();
                 /* @var IndexColumn $indexColumn */
                 $idxName = $indexColumn->name ?: $this->getIndexName($cm->table['name'], $name, 'idx');

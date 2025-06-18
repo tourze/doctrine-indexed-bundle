@@ -160,4 +160,37 @@ class TestEntity
     #[ORM\Column]
     #[IndexColumn(name: 'custom_index_name')]
     private string $customIndexField;
+
+    public function getIndexedField(): string
+    {
+        return $this->indexedField;
+    }
+
+    public function getFulltextField(): string
+    {
+        return $this->fulltextField;
+    }
+
+    public function getCustomIndexField(): string
+    {
+        return $this->customIndexField;
+    }
+
+    public function setIndexedField(string $indexedField): self
+    {
+        $this->indexedField = $indexedField;
+        return $this;
+    }
+
+    public function setFulltextField(string $fulltextField): self
+    {
+        $this->fulltextField = $fulltextField;
+        return $this;
+    }
+
+    public function setCustomIndexField(string $customIndexField): self
+    {
+        $this->customIndexField = $customIndexField;
+        return $this;
+    }
 }
