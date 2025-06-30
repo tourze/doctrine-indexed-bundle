@@ -72,7 +72,7 @@ class AddIndexedListener
             if (!empty($indexColumn) && !$ormColumn->unique) {
                 $indexColumn = $indexColumn[0]->newInstance();
                 /* @var IndexColumn $indexColumn */
-                $idxName = $indexColumn->name ?: $this->getIndexName($cm->table['name'], $name, 'idx');
+                $idxName = $indexColumn->name !== null ? $indexColumn->name : $this->getIndexName($cm->table['name'], $name, 'idx');
                 $cm->table['indexes'][$idxName] = [
                     'columns' => [
                         $name,
@@ -85,7 +85,7 @@ class AddIndexedListener
             if (!empty($fulltextColumn)) {
                 $fulltextColumn = $fulltextColumn[0]->newInstance();
                 /* @var FulltextColumn $fulltextColumn */
-                $idxName = $fulltextColumn->name ?: $this->getIndexName($cm->table['name'], $name, 'fulltext');
+                $idxName = $fulltextColumn->name !== null ? $fulltextColumn->name : $this->getIndexName($cm->table['name'], $name, 'fulltext');
                 $cm->table['indexes'][$idxName] = [
                     'columns' => [
                         $name,
