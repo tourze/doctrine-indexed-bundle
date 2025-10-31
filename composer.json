@@ -10,7 +10,7 @@
     "symfony/doctrine-bridge": "^7.3",
     "symfony/http-kernel": "^7.3",
     "tourze/bundle-dependency": "1.*",
-    "tourze/symfony-dependency-service-loader": "0.0.*",
+    "tourze/symfony-dependency-service-loader": "1.*",
     "yiisoft/strings": "^2.1"
   },
   "require-dev": {
@@ -18,8 +18,7 @@
     "phpunit/phpunit": "^11.5",
     "symfony/framework-bundle": "^7.3",
     "tourze/phpunit-symfony-kernel-test": "0.0.*",
-    "tourze/phpunit-symfony-unit-test": "0.0.*",
-    "tourze/symfony-testing-framework": "0.0.*"
+    "tourze/phpunit-symfony-unit-test": "1.*"
   },
   "autoload": {
     "psr-4": {
