@@ -9,6 +9,7 @@
     "symfony/dependency-injection": "^7.3",
     "symfony/doctrine-bridge": "^7.3",
     "symfony/http-kernel": "^7.3",
+    "symfony/property-access": "^7.3",
     "tourze/bundle-dependency": "1.*",
     "tourze/symfony-dependency-service-loader": "1.*",
     "yiisoft/strings": "^2.1"
