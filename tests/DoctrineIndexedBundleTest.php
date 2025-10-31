@@ -1,22 +1,19 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Tourze\DoctrineIndexedBundle\Tests;
 
-use PHPUnit\Framework\TestCase;
-use Symfony\Component\HttpKernel\Bundle\Bundle;
+use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
 use Tourze\DoctrineIndexedBundle\DoctrineIndexedBundle;
+use Tourze\PHPUnitSymfonyKernelTest\AbstractBundleTestCase;
 
 /**
- * DoctrineIndexedBundle主类测试
+ * @internal
  */
-class DoctrineIndexedBundleTest extends TestCase
+#[CoversClass(DoctrineIndexedBundle::class)]
+#[RunTestsInSeparateProcesses]
+final class DoctrineIndexedBundleTest extends AbstractBundleTestCase
 {
-    /**
-     * 测试Bundle类是否正确继承Symfony的Bundle基类
-     */
-    public function testBundleInheritance(): void
-    {
-        $bundle = new DoctrineIndexedBundle();
-        $this->assertInstanceOf(Bundle::class, $bundle);
-    }
 }

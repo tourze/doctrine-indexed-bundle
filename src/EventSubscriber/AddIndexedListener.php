@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Tourze\DoctrineIndexedBundle\EventSubscriber;
 
 use Doctrine\Bundle\DoctrineBundle\Attribute\AsDoctrineListener;
@@ -8,6 +10,7 @@ use Doctrine\ORM\Events;
 use Doctrine\ORM\Mapping as ORM;
 use Tourze\DoctrineIndexedBundle\Attribute\FulltextColumn;
 use Tourze\DoctrineIndexedBundle\Attribute\IndexColumn;
+use Tourze\DoctrineIndexedBundle\Attribute\UniqueColumn;
 use Yiisoft\Strings\Inflector;
 
 /**
@@ -16,10 +19,10 @@ use Yiisoft\Strings\Inflector;
  * @see https://alexkunin.medium.com/doctrine-symfony-adding-indexes-to-fields-defined-in-traits-a8e480af66b2
  */
 #[AsDoctrineListener(event: Events::loadClassMetadata)]
-class AddIndexedListener
+readonly class AddIndexedListener
 {
     public function __construct(
-        private readonly Inflector $inflector,
+        private Inflector $inflector,
     ) {
     }
 
@@ -51,48 +54,103 @@ class AddIndexedListener
         $cm = $eventArgs->getClassMetadata();
 
         foreach ($cm->getReflectionClass()->getProperties() as $property) {
-            $ormColumn = $property->getAttributes(ORM\Column::class);
-            if (empty($ormColumn)) {
-                continue;
-            }
-            $ormColumn = $ormColumn[0]->newInstance();
-            /** @var ORM\Column $ormColumn */
-            $name = $ormColumn->name;
-            if ($name === null) {
-                $name = $property->getName();
-                $name = $this->inflector->toSnakeCase($name);
-            }
-            if (empty($name)) {
-                continue;
-            }
-
-            // 索引字段
-            $indexColumn = $property->getAttributes(IndexColumn::class);
-            // 要注意，如果字段已经是唯一索引，那么就不需要再加索引
-            if (!empty($indexColumn) && !$ormColumn->unique) {
-                $indexColumn = $indexColumn[0]->newInstance();
-                /* @var IndexColumn $indexColumn */
-                $idxName = $indexColumn->name !== null ? $indexColumn->name : $this->getIndexName($cm->table['name'], $name, 'idx');
-                $cm->table['indexes'][$idxName] = [
-                    'columns' => [
-                        $name,
-                    ],
-                ];
-            }
-
-            // 全文索引
-            $fulltextColumn = $property->getAttributes(FulltextColumn::class);
-            if (!empty($fulltextColumn)) {
-                $fulltextColumn = $fulltextColumn[0]->newInstance();
-                /* @var FulltextColumn $fulltextColumn */
-                $idxName = $fulltextColumn->name !== null ? $fulltextColumn->name : $this->getIndexName($cm->table['name'], $name, 'fulltext');
-                $cm->table['indexes'][$idxName] = [
-                    'columns' => [
-                        $name,
-                    ],
-                    'flags' => ['fulltext'],
-                ];
-            }
+            $this->processProperty($property, $cm);
         }
+    }
+
+    /**
+     * @param ORM\ClassMetadata<object> $cm
+     */
+    private function processProperty(\ReflectionProperty $property, ORM\ClassMetadata $cm): void
+    {
+        $ormColumn = $this->getOrmColumn($property);
+        if (null === $ormColumn) {
+            return;
+        }
+
+        $columnName = $this->getColumnName($property, $ormColumn);
+        if ('' === $columnName) {
+            return;
+        }
+
+        $this->processIndexColumn($property, $cm, $columnName, $ormColumn);
+        $this->processFulltextColumn($property, $cm, $columnName);
+        $this->processUniqueColumn($property, $cm, $columnName);
+    }
+
+    private function getOrmColumn(\ReflectionProperty $property): ?ORM\Column
+    {
+        $ormColumns = $property->getAttributes(ORM\Column::class);
+        if ([] === $ormColumns) {
+            return null;
+        }
+
+        $inst = $ormColumns[0]->newInstance();
+        assert($inst instanceof ORM\Column);
+
+        return $inst;
+    }
+
+    private function getColumnName(\ReflectionProperty $property, ORM\Column $ormColumn): string
+    {
+        $name = $ormColumn->name;
+        if (null === $name) {
+            $name = $property->getName();
+            $name = $this->inflector->toSnakeCase($name);
+        }
+
+        return $name;
+    }
+
+    /**
+     * @param ORM\ClassMetadata<object> $cm
+     */
+    private function processIndexColumn(\ReflectionProperty $property, ORM\ClassMetadata $cm, string $columnName, ORM\Column $ormColumn): void
+    {
+        $indexColumns = $property->getAttributes(IndexColumn::class);
+        if ([] === $indexColumns || $ormColumn->unique) {
+            return;
+        }
+
+        $indexColumn = $indexColumns[0]->newInstance();
+        $idxName = $indexColumn->name ?? $this->getIndexName($cm->table['name'], $columnName, 'idx');
+        $cm->table['indexes'][$idxName] = [
+            'columns' => [$columnName],
+        ];
+    }
+
+    /**
+     * @param ORM\ClassMetadata<object> $cm
+     */
+    private function processFulltextColumn(\ReflectionProperty $property, ORM\ClassMetadata $cm, string $columnName): void
+    {
+        $fulltextColumns = $property->getAttributes(FulltextColumn::class);
+        if ([] === $fulltextColumns) {
+            return;
+        }
+
+        $fulltextColumn = $fulltextColumns[0]->newInstance();
+        $idxName = $fulltextColumn->name ?? $this->getIndexName($cm->table['name'], $columnName, 'fulltext');
+        $cm->table['indexes'][$idxName] = [
+            'columns' => [$columnName],
+            'flags' => ['fulltext'],
+        ];
+    }
+
+    /**
+     * @param ORM\ClassMetadata<object> $cm
+     */
+    private function processUniqueColumn(\ReflectionProperty $property, ORM\ClassMetadata $cm, string $columnName): void
+    {
+        $uniqueColumns = $property->getAttributes(UniqueColumn::class);
+        if ([] === $uniqueColumns) {
+            return;
+        }
+
+        $uniqueColumn = $uniqueColumns[0]->newInstance();
+        $idxName = $this->getIndexName($cm->table['name'], $columnName, 'unique');
+        $cm->table['uniqueConstraints'][$idxName] = [
+            'columns' => [$columnName],
+        ];
     }
 }

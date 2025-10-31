@@ -1,14 +1,20 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Tourze\DoctrineIndexedBundle\Tests\Attribute;
 
+use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\TestCase;
 use Tourze\DoctrineIndexedBundle\Attribute\UniqueColumn;
 
 /**
  * UniqueColumn属性测试
+ *
+ * @internal
  */
-class UniqueColumnTest extends TestCase
+#[CoversClass(UniqueColumn::class)]
+final class UniqueColumnTest extends TestCase
 {
     /**
      * 测试构造函数和属性

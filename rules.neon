@@ -1,0 +1,3 @@
+rules:
+    - Tourze\DoctrineIndexedBundle\PHPStan\Rules\UseIndexColumnForSingleFieldRule
+    - Tourze\DoctrineIndexedBundle\PHPStan\Rules\IndexColumnRequiresColumnRule

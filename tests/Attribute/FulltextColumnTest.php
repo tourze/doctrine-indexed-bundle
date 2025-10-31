@@ -1,14 +1,20 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Tourze\DoctrineIndexedBundle\Tests\Attribute;
 
+use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\TestCase;
 use Tourze\DoctrineIndexedBundle\Attribute\FulltextColumn;
 
 /**
  * FulltextColumn属性测试
+ *
+ * @internal
  */
-class FulltextColumnTest extends TestCase
+#[CoversClass(FulltextColumn::class)]
+final class FulltextColumnTest extends TestCase
 {
     /**
      * 测试构造函数和属性
