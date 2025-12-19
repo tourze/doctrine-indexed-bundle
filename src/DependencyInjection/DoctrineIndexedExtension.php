@@ -6,7 +6,7 @@ namespace Tourze\DoctrineIndexedBundle\DependencyInjection;
 
 use Tourze\SymfonyDependencyServiceLoader\AutoExtension;
 
-class DoctrineIndexedExtension extends AutoExtension
+final class DoctrineIndexedExtension extends AutoExtension
 {
     protected function getConfigDir(): string
     {
